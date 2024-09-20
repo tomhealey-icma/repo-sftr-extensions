@@ -1,0 +1,637 @@
+namespace cdm.regulation.sftr : <"SFTR Reporting Model">
+version "${project.version}"
+
+
+enum SftrNatureOfTheReportingCounterpartyEnum:
+	F	<"Financial counterparty"> 
+	N	<"Non-financial counterparty">
+
+enum SftrCounterpartySideEnum:
+	GIVE <"Collateral taker">
+	TAKE <"Collateral provider">
+
+enum SftrSectorOfTheReportingCounterpartyEnum:
+	CDTI	<"Credit institution authorised in accordance with Directive 2013/36/EU of the European Parliament and of the Council(1) or Council Regulation (EU) No 1024/2013(2) or a third-country entity which would require authorisation or registration in accordance with that legislative act">
+	INVF	<"Investment firm authorized in accordance with Directive 2014/65/EU of the European Parliament and of the Council(3) or a third-country entity which would require authorisation or registration in accordance with that legislative act">
+	INUN	<"Insurance undertaking authorized in accordance with Directive 2009/138/EC of the European Parliament and of the Council(4) (Solvency II) or a third-country entity which would require authorisation or registration in accordance with that legislative act"> 
+	AIFD	<"AIF managed by AIFMs authorized or registered in accordance with Directive 2011/61/EU of the European Parliament and of the Council(5) or a third- country entity which would require authorisation or registration in accordance with that legislative act"> 
+	ORPI	<"Institution for occupational retirement provision authorized or registered in accordance with Directive 2003/41/EC of the European Parliament and of the Council(6) or a third-country entity which would require authorisation or registration in accordance with that legislative act"> 
+	CCPS	<"Central counterparty authorized in accordance with Regulation (EU) No 648/2012 of the European Parliament and of the Council(7) or a third-country entity which would require authorisation or registration in accordance with that legislative act"> 
+	REIN	<"Reinsurance undertaking authorized in accordance with Solvency II or a third-country entity which would require authorisation or registration in accordance with that legislative act">
+	CSDS	<"Central securities depository authorized in accordance with Regulation (EU) No 909/2014 of the European Parliament and of the Council(8) or a third-country entity which would require authorisation or registration in accordance with that legislative act"> 
+	UCIT	<"UCITS and its management company, authorized in accordance with Directive 2009/65/EC of the European Parliament and of the Council(9) or a third- country entity which would require authorisation or registration in accordance with that legislative act"> 
+	A		<"Agriculture, forestry and fishing">
+	B		<"Mining and quarrying">
+	C		<"Manufacturing">
+	D		<"Electricity, gas, steam and air conditioning supply">
+	E_		<"Water supply, sewerage, waste management and remediation activities">
+	F		<"Construction">
+	G		<"Wholesale and retail trade, repair of motor vehicles and motorcycles">
+	H		<"Transportation and storage">
+	I		<"Accommodation and food service activities">
+	J		<"Information and communication">
+	K		<"Financial and insurance activities">
+	L		<"Real estate activities">
+	M		<"Professional, scientific and technical activities">
+	N		<"Administrative and support service activities">
+	O		<"Public administration and defence; compulsory social security">
+	P		<"Education">
+	Q		<"Human health and social work activities">
+	R		<"Arts, entertainment and recreation">
+	S		<"Other service activities">
+	T		<"Activities of households as employers; undifferentiated goods – and services – producing activities of households for own use">
+	U		<"Activities of extraterritorial organizations and bodies">
+
+	
+enum SftrAdditionalSectorClassificationEnum:
+	ETFT	<"ETF">
+	MMFT	<"MMF">
+	REIT	<"REIT">
+	OTHR	<"Other">
+
+
+enum SftrActionTypeEnum:
+	NEWT <"Date of conclusion of the contract (trade date)"> 
+	MODI <"Effective date of modification or, where applicable, the expected settlement date ">
+	CORR <"Date from which the correction should apply (typically the date for which previous incorrect data was reported) ">
+	ETRM <"Expected settlement date of the termination ">
+	EROR <"NA 1&2 COLU Expected settlement date ">
+	VALU <"Valuation date ">
+	MARU <"Expected settlement date  ">
+	REUU <"Actual settlement date">
+
+enum SftrTypeOfSFTEnum:
+	SLEB	<"securities or commodities lending or securities or commodities borrowing">
+	SBSC	<"buy-sell back transaction or sell-buy back transaction ">
+	REPO	<"repurchase transaction ">
+	MGLD	<"margin lending transaction">
+	NORP	<"Non-Reportable SFTR Type">
+	
+enum GeneralCollateralIndicatorEnum:
+	SPEC	<"Specific collateral - The code ‘SPEC’ shall be specified for an SFT which is subject to a specific collateral arrangement. A specific collateral arrangement specifies a collateral arrangement for a transaction in which the collateral taker requests a specific International Securities Identification Number (‘ISIN’) to be provided by the collateral provider.">
+	GENE	<"General collateral - The code ‘GENE’ shall be specified for an SFT which is subject to a general collateral arrangement. A general collateral arrangement specifies a collateral arrangement for a transaction in which the collateral giver may choose the security to be provided as collateral amongst a relatively wide range of securities satisfying predefined criteria.">
+
+enum SftrTypeOfAsset:
+	SECU	<"Securities">
+	COMM	<"Commodities">
+	CASH	<"Cash">
+
+enum SftrClearedEnum:
+	TRUE <"True">
+	FALSE <"False">
+
+enum SftrSecurityQualityEnum:
+	INVG	<"Investment grade"> 
+	NIVG	<"Non-investment grade"> 
+	NOTR	<"Non-rated"> 
+	NOAP	<"Not applicable">
+	
+enum SftrSecurityTypeEnum:
+	GOVS	<"Government securities">
+	SUNS	<"Supra-nationals and agencies securities ">
+	FIDE	<"Debt securities (including covered bonds) issued by banks and other financial institutions ">
+	NFID	<"Corporate debt securities (including covered bonds) issued by non-financial institutions ">
+	SEPR	<"Securitized products (including CDO, CMBS, ABCP) ">
+	MEQU	<"Main index equities (including convertible bonds) ">
+	OEQU	<"Other equities (including convertible bonds) ">
+	OTHR	<"Other assets (including shares in mutual funds)">
+
+
+enum SftrUnitOfMeasureEnum:
+	KILO	<"Kilogram">
+	PIEC	<"Piece">
+	TONS	<"Ton">
+	METR	<"Metre">
+	INCH	<"Inch">
+	YARD	<"Yard">
+	GBGA	<"GBGallon">
+	GRAM	<"Gram">
+	CMET	<"Centimetre">
+	SMET	<"SquareMetre">
+	FOOT	<"Foot">
+	MILE	<"Mile">
+	SQIN	<"SquareInch">
+	SQFO	<"SquareFoot">
+	SQMI	<"SquareMile">
+	GBOU	<"GBOunce">
+	USOU	<"USOunce">
+	GBPI	<"GBPint">
+	USPI	<"USPint">
+	GBQA	<"GBQuart">
+	USQA	<"USQuart">
+	USGA	<"USGallon">
+	MMET	<"Millimetre">
+	KMET	<"Kilometre">
+	SQYA	<"SquareYard">
+	ACRE	<"Acre">
+	ARES	<"Are">
+	SMIL	<"SquareMillimetre">
+	SCMT	<"SquareCentimetre">
+	HECT	<"Hectare">
+	SQKI	<"SquareKilometre">
+	MILI	<"MilliLitre">
+	CELI	<"Centilitre">
+	LITR	<"Litre">
+	PUND	<"Pound">
+	ALOW	<"Allowances">
+	ACCY	<"AmountOfCurrency">
+	BARL	<"Barrels">
+	BCUF	<"BillionCubicFeet">
+	BDFT	<"BoardFeet">
+	BUSL	<"Bushels">
+	CEER	<"CertifiedEmissionsReduction">
+	CLRT	<"ClimateReserveTonnes">
+	CBME	<"CubicMeters">
+	DAYS	<"Days">
+	DMET	<"DryMetricTons">
+	ENVC	<"EnvironmentalCredit">
+	ENVO	<"EnvironmentalOffset">
+	HUWG	<"Hundredweight">
+	KWDC	<"KilowattDayCapacity">
+	KWHO	<"KilowattHours">
+	KWHC	<"KilowattHoursCapacity">
+	KMOC	<"KilowattMinuteCapacity">
+	KWMC	<"KilowattMonthCapacity">
+	KWYC	<"KilowattYearCapacity">
+	MWDC	<"MegawattDayCapacity">
+	MWHO	<"MegawattHours">
+	MWHC	<"MegawattHoursCapacity">
+	MWMC	<"MegawattMinuteCapacity">
+	MMOC	<"MegawattMonthCapacity">
+	MWYC	<"MegawattYearCapacity">
+	TONE	<"MetricTons">
+	MIBA	<"MillionBarrels">
+	MBTU	<"OneMillionBTU">
+	OZTR	<"TroyOunces">
+	UCWT	<"USHundredweight">
+	IPNT	<"IndexPoint">
+	PWRD	<"PrincipalWithRelationToDebtInstrument">
+	DGEU	<"DieselGallonEquivalent">
+	GGEU	<"GasolineGallonEquivalent">
+	TOCD	<"TonsOfCarbonDioxide">
+
+
+
+enum SftrMasterAgreementTypeEnum:
+	MRAA	<"MRA">
+	GMRA	<"GMRA">
+	MSLA	<"MSLA">
+	GMSL	<"GMSLA">
+	ISDA	<"ISDA">
+	DERP	<"Deutscher Rahmenvertrag für Wertpapierpensionsgeschäfte">
+	CNBR	<"China Bond Repurchase Master Agreement">
+	KRRA	<"Korea Financial Investment Association (KOFIA) Standard Repurchase Agreement">
+	CARA	<"Investment Industry Regulatory Organization of Canada (IIROC) Repurchase/Reverse Repurchase Transaction Agreement">
+	FRFB	<"ConventionCadre Relative aux Operations de Pensions Livrees,CHRA Swiss Master Repurchase Agreement">
+	DEMA	<"German Master Agreement">
+	JPBR	<"Japanese Master Agreement on the Transaction with Repurchase Agreement of the Bonds">
+	ESRA	<"Contrato Marco de compraventa y Reporto de valores">
+	OSLA	<"Overseas Securities Lending Agreement (OSLA)">
+	MEFI	<"Master Equity and Fixed Interest Stock Lending Agreement (MEFISLA)">
+	GESL	<"Gilt Edged Stock Lending Agreement (GESLA)">
+	KRSL	<"Korean Securities Lending Agreement (KOSLA)">
+	DERD	<"Deutscher Rahmenvertrag für Wertpapierdarlehen">
+	AUSL	<"Australian Masters Securities Lending Agreement (AMSLA)">
+	JPBL	<"Japanese Master Agreement on Lending Transaction of Bonds">
+	JPSL	<"Japanese Master Agreement on the Borrowing and Lending Transactions of Share Certificates">
+	BIAG	<"Bilateral agreement">
+	CSDA	<"CSD bilateral agreement">
+	OTHR	<"If the master agreement type is not included in the above list">
+
+enum SftrGeneralCollateralIndicatorEnum:
+	SPEC	<"Specific collateral">
+	GENE	<"General collateral">
+
+enum SftrDbvIndicatorEnum:
+	TRUE <"True">
+	FALSE <"False">
+
+enum SftrMethodUsedToProvideCollateralEnum:
+	TTCA	<"Title transfer collateral arrangement">
+	SICA	<"Securities financial collateral arrangement">
+	SIUR	<"Securities financial with the right of use">
+
+enum SftrOpenTermEnum:
+	TRUE <"True">
+	FALSE <"False">
+	
+enum SftrTerminationOptionalityEnum:
+	EGRN	<"Evergreen">
+	ETSB	<"Extendable">
+
+enum SftrDayCountConventionEnum:
+	A001	<"IC30360ISDAor30360AmericanBasicRule">
+	A002	<"IC30365">
+	A003	<"IC30Actual">
+	A004	<"Actual360">
+	A005	<"Actual365Fixed">
+	A006	<"ActualActualICMA">
+	A007	<"IC30E360orEuroBondBasismodel1">
+	A008	<"ActualActualISDA">
+	A009	<"Actual365LorActuActubasisRule">
+	A010	<"ActualActualAFB">
+	A011	<"IC30360ICMAor30360basicrule">
+	A012	<"IC30E2360orEurobondbasismodel2">
+	A013	<"IC30E3360orEurobondbasismodel3">
+	A014	<"Actual365NL">
+
+enum SftrFloatingRateEnum:
+	EONA	<"EONIA">
+	EONS	<"EONIA SWAP">
+	EURI	<"EURIBOR">
+	EUUS	<"EURODOLLAR">
+	EUCH	<"EuroSwiss">
+	GCFR	<"GCF REPO">
+	ISDA	<"ISDAFIX">
+	LIBI	<"LIBID">
+	LIBO	<"LIBOR">
+	MAAA	<"Muni AAA">
+	PFAN	<"Pfandbriefe">
+	TIBO	<"TIBOR">
+	STBO	<"STIBOR">
+	BBSW	<"BBSW">
+	JIBA	<"JIBAR">
+	BUBO	<"BUBOR">
+	CDOR	<"CDOR">
+	CIBO	<"CIBOR">
+	MOSP	<"MOSPRIM">
+	NIBO	<"NIBOR">
+	PRBO	<"PRIBOR">
+	TLBO	<"TELBOR">
+	WIBO	<"WIBOR">
+	TREA	<"Treasury">
+	SWAP	<"SWAP">
+	FUSW	<"Future SWAP">
+
+enum SftrFloatingRateReferencePeriodTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+
+enum SftrFloatingRatePaymentFrequencyTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+
+enum SftrFloatingRateResetFrequencyTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+
+enum SftrTypeOfAssetEnum:
+SECU	<"Securities">
+COMM	<"Commodities">
+
+enum SftrBaseProductEnum:
+	AGRI	<"Agricultural">
+	NRGY	<"Energy">
+	ENVR	<"Environmental">
+	FRGT	<"Freight">
+	FRTL	<"Fertilizer">
+	INDP	<"Industrial products">
+	METL	<"Metals">
+	MCEX	<"Multi Commodity Exotic">
+	PAPR	<"Paper">
+	POLY	<"Polypropylene">
+	INFL	<"Inflation">
+	OEST	<"Official economic statistics">
+	OTHC	<"Other C10 ‘as defined in Table 10.1 Section 10 of Annex III to Commission Delegated Regulation supplementing Regulation (EU) No 600/2014 of the European Parliament and of the Council with regard to reguatory technical standards on transparency requirements for trading venues and investment firms in respect of bonds, structured finance products, emission allowances and derivatives">
+	OTHR	<"Other">
+
+
+enum SftrAGRISubProductEnum:
+	GROS	<"Grains Oil Seeds">
+	SOFT	<"Softs">
+	POTA	<"Potato">
+	OOLI	<"Olive oil">
+	DIRY	<"Dairy">
+	FRST	<"Forestry">
+	SEAF	<"Seafood">
+	LSTK	<"Livestock">
+	GRIN	<"Grain">
+	OTHR	<"Other">
+
+enum SftrGROSFurtherSubProductEnum:
+	FWHT	<"Feed Wheat">
+	SOYB	<"Soybeans">
+	CORN	<"Maize">
+	RPSD	<"Rapeseed">
+	RICE	<"Rice">
+	OTHR	<"Other">
+
+enum SftrSOFTFurtherSubProductEnum:
+	CCOA	<"Cocoa">
+	ROBU	<"Robusta Coffee">
+	WHSG	<"White Sugar">
+	BRWN	<"Raw Sugar">
+	OTHR	<"Other">
+	
+enum SftrOOLIFurtherSubProductEnum:
+	LAMP	<"Lampante">
+	OTHR	<"Other">
+	
+enum SftrGRINFurtherSubProductEnum:
+	MWHT	<"Milling Wheat">
+	OTHR	<"Other">
+	
+enum SftrNRGYSubProductEnum:
+	ELEC	<"Electricity">
+	NGAS	<"Natural Gas">
+	OILP	<"Oil">
+	COAL	<"Coal">
+	INRG	<"Inter Energy">
+	RNNG	<"Renewable energy">
+	LGHT	<"Light ends">
+	DIST	<"Distillates">
+	OTHR	<"Other">
+
+enum SftrELECFurtherSubProductEnum:
+	BSLD	<"Base load">
+	FITR	<"Financial Transmission Rights">
+	PKLD	<"Peak load">
+	OFFP	<"Off-peak">
+	OTHR	<"Other">
+
+enum SftrNGASFurtherSubProductEnum:
+	GASP	<"GASPOOL">
+	LNGG	<"LNG">
+	NBPG	<"NBP">
+	NCGG	<"NCG">
+	TTFG	<"TTF">
+	OTHR	<"Other">
+
+
+enum SftrOILPFurtherSubProductEnum:
+	BAKK	<"Bakken">
+	BDSL	<"Biodiesel">
+	BRNT	<"Brent">
+	BRNX	<"Brent NX">
+	CNDA	<"Canadian">
+	COND	<"Condensate">
+	DSEL	<"Diesel">
+	DUBA	<"Dubai">
+	ESPO	<"ESPO">
+	ETHA	<"Ethanol">
+	FUEL	<"Fuel">
+	FOIL	<"Fuel Oil">
+	GOIL	<"Gasoil">
+	GSLN	<"Gasoline">
+	HEAT	<"Heating Oil">
+	JTFL	<"Jet Fuel">
+	KERO	<"Kerosene">
+	LLSO	<"Light Louisiana Sweet (LLS)">
+	MARS	<"Mars">
+	NAPH	<"Naptha">
+	NGLO	<"NGL">
+	TAPI	<"Tapis">
+	URAL	<"Urals">
+	WTIO	<"WTI">
+	OTHR	<"Other">
+
+enum SftrENVRSubProductEnum:
+	EMIS	<"Emissions">
+	WTHR	<"Weather">
+	CRBR	<"Carbon related">
+	OTHR	<"Other">
+
+enum SftrEMISFurtherSubProductEnum:
+	CERE	<"CER">
+	ERUE	<"ERU">
+	EUAE	<"EUA">
+	EUAA	<"EUAA">
+	OTHR	<"Other">
+
+enum SftrFRGTSubProductEnum:
+	WETF	<"Wet">
+	DRYF	<"Dry">
+	CSHP	<"Containerships">
+	OTHR	<"Other">
+
+enum SftrWETFFurtherSubProductEnum:
+	TNKR	<"Tankers">
+	OTHR	<"Other">
+
+
+enum SftrDRYFFurtherSubProductEnum:
+	DBCR	<"Dry bulk carriers">
+	OTHR	<"Other">
+
+
+enum SftrFRTLSubProductEnum:
+	AMMO	<"Ammonia">
+	DAPH	<"DAP (Diammonium Phosphate)">
+	PTSH	<"Potash">
+	SLPH	<"Sulphur">
+	UREA	<"Urea">
+	UAAN	<"UAN (urea and ammonium nitrate)">
+	OTHR	<"Other">
+
+
+enum SftrINDPSubProductEnum:
+	CSTR	<"Construction">
+	MFTG	<"Manufacturing">
+
+enum SftrMETLSubProductEnum:
+	NPRM	<"Non Precious">
+	PRME	<"Precious">
+
+
+enum SftrNPRMFurtherSubProductEnum:
+	ALUM	<"Aluminium">
+	ALUA	<"Aluminium Alloy">
+	CBLT	<"Cobalt">
+	COPR	<"Copper">
+	IRON	<"Iron ore">
+	LEAD	<"Lead">
+	MOLY	<"Molybdenum">
+	NASC	<"NASAAC">
+	NICK	<"Nickel">
+	STEL	<"Steel">
+	TINN	<"Tin">
+	ZINC	<"Zinc">
+	OTHR	<"Other">
+
+
+enum SftrPRMEFurtherSubProductEnum:
+	GOLD	<"Gold">
+	SLVR	<"Silver">
+	PTNM	<"Platinum">
+	PLDM	<"Palladium">
+	OTHR	<"Other">
+
+enum SftrPAPRFurtherSubProductEnum:
+	CBRD	<"Containerboard">
+	NSPT	<"Newsprint">
+	PULP	<"Pulp">
+	RCVP	<"Recovered paper">
+	OTHR	<"Other">
+
+enum SftrPOLYFurtherSubProductEnum:
+	PLST	<"Plastic">
+	OTHR	<"Other">
+
+
+enum SftrFloatingRebateRateEnum:
+	EONA	<"EONIA">
+	EONS	<"EONIA SWAP">
+	EURI	<"EURIBOR">
+	EUUS	<"EURODOLLAR">
+	EUCH	<"EuroSwiss">
+	GCFR	<"GCF REPO">
+	ISDA	<"ISDAFIX">
+	LIBI	<"LIBID">
+	LIBO	<"LIBOR">
+	MAAA	<"Muni AAA">
+	PFAN	<"Pfandbriefe">
+	TIBO	<"TIBOR">
+	STBO	<"STIBOR">
+	BBSW	<"BBSW">
+	JIBA	<"JIBAR">
+	BUBO	<"BUBOR">
+	CDOR	<"CDOR">
+	CIBO	<"CIBOR">
+	MOSP	<"MOSPRIM">
+	NIBO	<"NIBOR">
+	PRBO	<"PRIBOR">
+	TLBO	<"TELBOR">
+	WIBO	<"WIBOR">
+	TREA	<"Treasury">
+	SWAP	<"SWAP">
+	FUSW	<"Future SWAP">
+
+
+enum SftrFloatingRebateRateReferencePeriodTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+
+enum SftrFloatingRebateRatePaymentFrequencyTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+
+enum SftrFloatingRebateRateResetFrequencyTimePeriodEnum:
+	YEAR	<"Year">
+	MNTH	<"Month">
+	WEEK	<"Week">
+	DAYS	<"Day">
+	
+enum SftrTypeOfCollateralComponentEnum:
+	SECU	<"Securities">
+	COMM	<"Commodities">
+	CASH	<"Cash">
+	
+enum SftrCollateralUnitOfMeasureEnum:
+	KILO	<"Kilogram">
+	PIEC	<"Piece">
+	TONS	<"Ton">
+	METR	<"Metre">
+	INCH	<"Inch">
+	YARD	<"Yard">
+	GBGA	<"GBGallon">
+	GRAM	<"Gram">
+	CMET	<"Centimetre">
+	SMET	<"SquareMetre">
+	FOOT	<"Foot">
+	MILE	<"Mile">
+	SQIN	<"SquareInch">
+	SQFO	<"SquareFoot">
+	SQMI	<"SquareMile">
+	GBOU	<"GBOunce">
+	USOU	<"USOunce">
+	GBPI	<"GBPint">
+	USPI	<"USPint">
+	GBQA	<"GBQuart">
+	USQA	<"USQuart">
+	USGA	<"USGallon">
+	MMET	<"Millimetre">
+	KMET	<"Kilometre">
+	SQYA	<"SquareYard">
+	ACRE	<"Acre">
+	ARES	<"Are">
+	SMIL	<"SquareMillimetre">
+	SCMT	<"SquareCentimetre">
+	HECT	<"Hectare">
+	SQKI	<"SquareKilometre">
+	MILI	<"MilliLitre">
+	CELI	<"Centilitre">
+	LITR	<"Litre">
+	PUND	<"Pound">
+	ALOW	<"Allowances">
+	ACCY	<"AmountOfCurrency">
+	BARL	<"Barrels">
+	BCUF	<"BillionCubicFeet">
+	BDFT	<"BoardFeet">
+	BUSL	<"Bushels">
+	CEER	<"CertifiedEmissionsReduction">
+	CLRT	<"ClimateReserveTonnes">
+	CBME	<"CubicMeters">
+	DAYS	<"Days">
+	DMET	<"DryMetricTons">
+	ENVC	<"EnvironmentalCredit">
+	ENVO	<"EnvironmentalOffset">
+	HUWG	<"Hundredweight">
+	KWDC	<"KilowattDayCapacity">
+	KWHO	<"KilowattHours">
+	KWHC	<"KilowattHoursCapacity">
+	KMOC	<"KilowattMinuteCapacity">
+	KWMC	<"KilowattMonthCapacity">
+	KWYC	<"KilowattYearCapacity">
+	MWDC	<"MegawattDayCapacity">
+	MWHO	<"MegawattHours">
+	MWHC	<"MegawattHoursCapacity">
+	MWMC	<"MegawattMinuteCapacity">
+	MMOC	<"MegawattMonthCapacity">
+	MWYC	<"MegawattYearCapacity">
+	TONE	<"MetricTons">
+	MIBA	<"MillionBarrels">
+	MBTU	<"OneMillionBTU">
+	OZTR	<"TroyOunces">
+	UCWT	<"USHundredweight">
+	IPNT	<"IndexPoint">
+	PWRD	<"PrincipalWithRelationToDebtInstrument">
+	DGEU	<"DieselGallonEquivalent">
+	GGEU	<"GasolineGallonEquivalent">
+	TOCD	<"TonsOfCarbonDioxide">
+	
+enum SftrCollateralQualityEnum:
+	INVG	<"Investment grade"> 
+	NIVG	<"Non-investment grade"> 
+	NOTR	<"Non-rated"> 
+	NOAP	<"Not applicable">
+	
+enum SftrCollateralTypeEnum:
+	GOVS	<"Government securities">
+	SUNS	<"Supra-nationals and agencies securities ">
+	FIDE	<"Debt securities (including covered bonds) issued by banks and other financial institutions ">
+	NFID	<"Corporate debt securities (including covered bonds) issued by non-financial institutions ">
+	SEPR	<"Securitized products (including CDO, CMBS, ABCP) ">
+	MEQU	<"Main index equities (including convertible bonds) ">
+	OEQU	<"Other equities (including convertible bonds) ">
+	OTHR	<"Other assets (including shares in mutual funds)">
+	
+enum SftrLevelEnum:
+	TCTN	<"Transaction">
+	PSTN	<"Position">
+
+
+enum SftrReInvestedCashEnum:
+	MMFT	<"Registered money market fund">
+	OCMP	<"Any other commingled pool">
+	REPM	<"The repo market">
+	SDPU	<"Direct purchase of securities">
+	OTHR	<"Other">
+
+enum SftrFundingSourcesEnum:
+	REPO	<"Repos or BSB">
+	SECL	<"Cash collateral from securities lending">
+	FREE	<"Free credits">
+	CSHS	<"Proceeds from customer short sales">
+	BSHS	<"Proceeds from broker short sales">
+	UBOR	<"Unsecured borrowing">
+	OTHR	<"Other">

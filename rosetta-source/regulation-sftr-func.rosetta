@@ -1,0 +1,301 @@
+namespace cdm.regulation.sftr : <"SFTR Reporting Model">
+version "${project.version}"
+
+import cdm.base.*
+import cdm.base.math.*
+import cdm.base.datetime.*
+import cdm.base.staticdata.party.*
+import cdm.base.staticdata.asset.common.*
+import cdm.base.staticdata.asset.rates.*
+import cdm.base.staticdata.identifier.*
+import cdm.base.staticdata.common.*
+
+import cdm.observable.asset.*
+import cdm.observable.event.*
+
+import cdm.product.common.*
+import cdm.product.asset.*
+import cdm.product.template.*
+import cdm.product.common.settlement.*
+
+import cdm.legaldocumentation.master.*
+import cdm.legaldocumentation.common.*
+import cdm.product.collateral.*
+
+import cdm.event.workflow.*
+import cdm.event.position.*
+import cdm.event.common.*
+import cdm.product.qualification.*
+
+import cdm.product.common.repo.*
+
+
+		
+func Create_SftrCounterpartyReport:
+	inputs:
+		sftrReportableEvent WorkflowStep(1..1)
+		reportTrackingNumber string(1..1)
+	output:
+		sftCptyRpt SftrCounterpartyReport(0..1)
+	
+	alias lastTradeState:
+		sftrReportableEvent
+			extract [item -> businessEvent -> after] then last
+	
+	alias lastTrade:
+		lastTradeState
+			extract item -> trade
+		
+	alias tradeEconomicTerms:
+		lastTrade -> tradableProduct -> product -> contractualProduct -> economicTerms
+	
+	alias reportingCpty:
+		sftrReportableEvent
+			extract [item -> party ] then first
+	
+	alias reportingCptySector:
+			GetPartySector(reportingCpty)
+		
+	set sftCptyRpt -> typeOfSft:
+		if (Qualify_RepurchaseAgreement(tradeEconomicTerms)) then
+			SftrTypeOfSFTEnum -> REPO
+		else if (Qualify_SecurityLendingAgreement(tradeEconomicTerms)) then
+			SftrTypeOfSFTEnum -> SLEB
+		else
+			SftrTypeOfSFTEnum -> NORP
+
+	set sftCptyRpt -> reportSubmittingEntity:
+			GetPartyLei(reportingCpty)
+			
+	set sftCptyRpt -> reportingCounterparty:
+			GetPartyLei(reportingCpty)
+	
+	set sftCptyRpt -> natureOfTheReportingCounterparty:	
+			SftrNatureOfTheReportingCounterpartyEnum -> F
+	
+	set sftCptyRpt -> sectorOfTheReportingCounterparty:
+			SftrSectorOfTheReportingCounterpartyEnum -> INVF
+	
+	set sftCptyRpt->sftrTrade:
+		Create_SftrTrade(sftrReportableEvent, lastTrade, reportingCpty)
+			
+	set sftCptyRpt -> branchOfTheReportingCounterparty:
+		sftrReportableEvent
+			extract [item-> party -> partyId]
+			then filter [item -> identifierType = PartyIdentifierTypeEnum -> LEI] then first
+			then extract [item-> identifier]
+			
+	set sftCptyRpt -> branchOfTheOtherCounterparty:
+		sftrReportableEvent
+			extract [item-> party -> partyId]
+			then filter 	[item -> identifierType = PartyIdentifierTypeEnum -> LEI] then first
+			then extract [item-> identifier]
+
+	set sftCptyRpt -> natureOfTheReportingCounterparty:
+			if (reportingCptySector = SftrSectorOfTheReportingCounterpartyEnum -> INVF) then
+				SftrNatureOfTheReportingCounterpartyEnum -> F
+	
+	set sftCptyRpt -> additionalSectorClassification:
+			SftrAdditionalSectorClassificationEnum -> OTHR
+	
+	set sftCptyRpt -> entityResponsibleForTheReport:
+			GetPartyLei(reportingCpty)
+			
+	set sftCptyRpt -> reportTrackingNumber:
+			reportTrackingNumber		
+
+	set sftCptyRpt -> sftrWorkflow -> cleared:
+			'False' //Need rule to determine if a trade has been cleared through processing of a cleared event.
+			
+	set sftCptyRpt -> sftrWorkflow -> clearingTimestamp:
+			"1969-01-01T00:00:00Z" //Need to access clearing event and event timestamp
+			
+
+
+func Create_SftrTrade: <"Creates a SFTR trade from a CDM Trade">
+	inputs:
+	    executionEvent WorkflowStep (1..1)
+		trade Trade (1..1)
+		reportingCpty Party (1..1)
+	output:
+		sftrTrade SftrTrade(1..1)
+	
+	alias cashSide:
+		trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+
+	alias economicTerms:
+	    trade -> tradableProduct -> product -> contractualProduct -> economicTerms
+
+	alias buyerRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> Buyer]
+		then extract [item -> partyReference] then only-element
+		
+	alias sellerRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> Seller]
+		then extract [item -> partyReference] then only-element
+		
+	alias beneficiaryRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> Beneficiary]
+		then extract [item -> partyReference] then only-element
+
+	alias triPartyAgentRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> TriPartyAgent]
+		then extract [item -> partyReference] then only-element
+
+	alias brokerRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> Broker]
+		then extract [item -> partyReference] then only-element
+
+	alias clearingMemberRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> ClearingClient]
+		then extract [item -> partyReference] then only-element
+
+	alias centralSecuritiesDepositoryRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> CentralSecuritiesDepository]
+		then extract [item -> partyReference] then only-element
+		
+	alias ccpRef:
+		trade -> partyRole
+		filter [item -> role = PartyRoleEnum -> ClearingOrganization]
+		then extract [item -> partyReference] then only-element
+
+	alias tradingVenueRef:
+		trade -> partyRole 
+		filter [item -> role = PartyRoleEnum -> ExecutionFacility]
+		then extract [item -> partyReference] then only-element
+		
+		
+	set sftrTrade -> counterpartySide: //In SFTR this reporting counterparty side
+		// if the reporting cty is seller then GIVE
+		if (GetPartyLei(reportingCpty) = GetPartyLei(sellerRef)) then
+			SftrCounterpartySideEnum -> GIVE
+		else
+			SftrCounterpartySideEnum -> TAKE
+	
+	set sftrTrade -> otherCounterparty:
+		if (GetPartyLei(GetCounterparty(trade -> tradableProduct -> counterparty)) = GetPartyLei(sellerRef)) then
+			GetPartyLei(buyerRef)
+		else
+			GetPartyLei(sellerRef)
+			
+	set sftrTrade -> countryOfTheOtherCounterparty:
+			GetCountryOfParty(GetCounterparty(trade -> tradableProduct -> counterparty))
+
+		
+	set sftrTrade -> beneficiary:
+			if beneficiaryRef exists then
+				GetPartyLei(beneficiaryRef)
+				
+	set sftrTrade -> triPartyAgent:
+			if triPartyAgentRef exists then
+				GetPartyLei(triPartyAgentRef)
+	
+	set sftrTrade -> broker:
+			if brokerRef exists then
+				GetPartyLei(brokerRef)
+
+	set sftrTrade -> clearingMember:
+			if clearingMemberRef exists then
+				GetPartyLei(clearingMemberRef)
+			
+	set sftrTrade -> centralSecuritiesDepository:
+			if centralSecuritiesDepositoryRef exists then
+				GetPartyLei(centralSecuritiesDepositoryRef)
+				
+				
+	set sftrTrade -> uti:
+			trade
+			extract item -> tradeIdentifier
+			then filter [item -> identifierType = TradeIdentifierTypeEnum -> UniqueTransactionIdentifier] then first
+			then extract [item-> assignedIdentifier -> identifier then first]
+			
+	set sftrTrade -> eventDate:
+			ConvertDateToString(trade -> tradeDate)
+			
+	set sftrTrade -> ccp:
+			if ccpRef exists then
+				GetPartyLei(ccpRef)
+				
+	set sftrTrade -> tradingVenue:
+			if tradingVenueRef exists then
+				GetPartyLei(tradingVenueRef)
+				
+	set sftrTrade -> masterAgreementType:
+			if (trade -> contractDetails -> documentation -> legalAgreementIdentification -> agreementName -> masterAgreementType exists)
+	        then 'GMRA'
+
+	set sftrTrade -> otherAgreement:
+			if (trade -> contractDetails -> documentation -> legalAgreementIdentification -> agreementName -> masterAgreementType any = MasterAgreementTypeEnum -> OTHR) then
+			trade -> contractDetails -> documentation -> legalAgreementIdentification -> agreementName -> otherAgreement then first
+	
+	set sftrTrade -> masterAgreementVersion:
+			IntToString(trade -> contractDetails -> documentation -> legalAgreementIdentification -> vintage then first)
+				
+	set sftrTrade -> executionTimestamp:
+			if executionEvent -> timestamp only-element exists then
+					DateTimeToString(executionEvent -> timestamp -> dateTime then first)
+	
+	set sftrTrade -> valueDate:
+			DateToFormatString(GetDateFromAdjustableDate(economicTerms -> effectiveDate -> adjustableDate))
+			
+	set sftrTrade -> maturityDate:
+			DateToFormatString(GetDateFromAdjustableDate(economicTerms -> effectiveDate -> adjustableDate))
+	
+	set sftrTrade -> terminationDate:
+			DateToFormatString(GetDateFromAdjustableDate(economicTerms -> effectiveDate -> adjustableDate))
+			
+	set sftrTrade -> minimumNoticePeriod:
+			if (economicTerms -> terminationProvision -> cancelableProvision -> effectivePeriod exists) then
+				IntToString(economicTerms -> terminationProvision -> cancelableProvision -> effectivePeriod -> periodMultiplier)
+				
+	set sftrTrade -> earliestCallBackDate:
+			if (economicTerms -> terminationProvision -> cancelableProvision -> earliestDate exists) then
+				DateToFormatString(economicTerms -> terminationProvision -> cancelableProvision -> earliestDate -> adjustableDate -> adjustedDate)
+			
+//	set sftrTrade -> generalCollateralIndicator:
+//			economicTerms -> collateral -> collateralProvisions -> collateralType -> NonCash
+
+
+
+func GetPartySector:
+	inputs:
+		party Party (1..1)
+	output:
+		sector SftrSectorOfTheReportingCounterpartyEnum (1..*)
+
+	alias lei:
+		GetPartyLei(party)
+
+	set sector:
+		[sector -> INVF]    //Dummy function to set one default sector but should support many and defined by LEI record
+
+
+func TestSftr:
+	inputs:
+		sftrType SftrTestType(1..*)
+	output:
+		result SftrName(1..1)
+
+	//Single value assignment
+	//set result -> fname:
+		//sftrType -> s1
+
+	//Conditional Assignment
+	set result -> lname:
+		sftrType
+		filter [item -> stype = SftrTestEnum -> Y] then first //on attributes with one value use if-then-else
+		then extract [item -> s1]  //get the first item - can also get last
+
+
+	//Flatten creates one list from multiple lists of lists
+	//Filter operates and returns one or more arrays
+
+	//ERROR] ERROR:There is no implicit variable in this context. This operator needs an explicit input in this
+	//filter [sftrType -> stype = SftrTestEnum -> Y]

@@ -1,0 +1,204 @@
+namespace cdm.regulation.sftr : <"SFTR Reporting Model">
+version "${project.version}"
+
+import cdm.base.*
+import cdm.base.datetime.*
+import cdm.base.staticdata.party.*
+import cdm.base.staticdata.identifier.*
+import cdm.base.staticdata.asset.common.*
+
+import cdm.observable.asset.*
+import cdm.observable.common.*
+import cdm.observable.event.*
+import cdm.product.template.*
+import cdm.product.asset.*
+import cdm.product.common.schedule.*
+import cdm.product.common.settlement.*
+
+import cdm.legaldocumentation.common.*
+import cdm.legaldocumentation.master.*
+
+import cdm.event.*
+import cdm.event.workflow.*
+import cdm.event.position.*
+import cdm.event.common.*
+import cdm.mapping.config.*
+
+type ESMASFTR_Reporting_Scheme:
+	typeOfSft string (1..1)
+	tradeIdentifier string (1..1)
+	
+	
+type SftrReportBase:
+	reportingTimeStamp string(1..1)
+	typeOfSft SftrTypeOfSFTEnum(1..1)
+	reportSubmittingEntity string (1..1)
+	reportingCounterparty string (1..1)
+	natureOfTheReportingCounterparty SftrNatureOfTheReportingCounterpartyEnum (1..1)
+	sectorOfTheReportingCounterparty SftrSectorOfTheReportingCounterpartyEnum (1..1)
+	additionalSectorClassification SftrAdditionalSectorClassificationEnum (1..1)
+	branchOfTheReportingCounterparty string (1..1)
+	branchOfTheOtherCounterparty string (1..1)
+	entityResponsibleForTheReport string (1..1)
+	reportTrackingNumber string(1..1)
+	sftrWorkflow SftrWorkflow(1..*)
+
+
+type SftrWorkflow:
+	cleared string (0..1)
+	clearingTimestamp string (0..1)
+	executionTimestamp string (0..1)
+	terminationDate string (0..1)
+
+
+type SftrCounterpartyReport extends SftrReportBase:
+	sftrTrade SftrTrade (1..1)
+
+
+type SftrTrade:
+	counterpartySide SftrCounterpartySideEnum(1..1)
+	otherCounterparty string (1..1)
+	countryOfTheOtherCounterparty string (1..1)
+	beneficiary string (0..1)
+	triPartyAgent string (0..1)
+	broker string (0..1)
+	clearingMember string (0..1)
+	centralSecuritiesDepository string (0..1)
+	agentLender string (0..1)
+	uti string (1..1)
+	eventDate string (1..1)
+	ccp string (0..1)
+	tradingVenue string (0..1)
+	masterAgreementType string (0..1)
+	otherMasterAgreementType string (0..1)
+    otherAgreement string (0..1)
+	masterAgreementVersion string (0..1)
+	executionTimestamp string (0..1)
+	valueDate	string (0..1)
+	maturityDate string (0..1)
+	terminationDate string (0..1)
+	minimumNoticePeriod string (0..1)
+	earliestCallBackDate string (0..1)
+	generalCollateralIndicator string (0..1)
+	dbvIndicator string (0..1)
+	methodUsedToProvideCollateral string (0..1)
+	openTerm string (0..1)
+	terminationOptionality string (0..1)
+	fixedRate string (0..1)
+	dayCountConvention  string (0..1)
+	floatingRate string (0..1)
+	floatingRateReferencePeriodTimePeriod string (0..1)
+	floatingRateReferencePeriodMultiplier string (0..1)
+	floatingRatePaymentFrequencyTimePeriod string (0..1)
+	floatingRatePaymentFrequencyMultiplier string (0..1)
+	floatingRateResetFrequencyTimePeriod string (0..1)
+	floatingRateResetFrequencyMultiplier string (0..1)
+	spread string (0..1)
+	marginLendingCurrencyAmount string (0..1)
+	marginLendingCurrency string (0..1)
+	adjustedRate string (0..1)
+	rateDate string (0..1)
+	principalAmountOnValueDate string (0..1)
+	principalAmountOnMaturityDate string (0..1)
+	principalAmountCurrency string (0..1)
+	typeOfAsset string (0..1)
+	securityIdentifier string (0..1)
+	classificationOfASecurity string (0..1)
+	baseProduct string (0..1)
+	subProduct string (0..1)
+	furtherSubProduct string (0..1)
+	quantityOrNominalAmount string (0..1)
+	unitOfMeasure string (0..1)
+	currencyOfNominalAmount string (0..1)
+	securityOrCommodityPrice string (0..1)
+	securityOrCommodityPriceCurrency string (0..1)
+	securityQuality string (0..1)
+	maturityOfTheSecurityOrCommodity string (0..1)
+	jurisdictionOfTheIssuer string (0..1)
+	leiOfTheIssuer string (0..1)
+	securityType string (0..1)
+	loanValue string (0..1)
+	marketValue string (0..1)
+	fixedRebateRate string (0..1)
+	floatingRebateRate string (0..1)
+	floatingRebateRateReferencePeriodTimePeriod string (0..1)
+	floatingRebateRateReferencePeriodMultiplier string (0..1)
+	floatingRebateRatePaymentFrequencyTimePeriod string (0..1)
+	floatingRebateRatePaymentFrequencyMultiplier string (0..1)
+	floatingRebateRateResetFrequencyTimePeriod string (0..1)
+	floatingRebateRateResetFrequencyMultiplier string (0..1)
+	spreadOfTheRebateRate string (0..1)
+	lendingFee string (0..1)
+	exclusiveArrangements string (0..1)
+	outstandingMarginLoan string (0..1)
+	baseCurrencyOfOutstandingMarginLoan string (0..1)
+	shortMarketValue string (0..1)
+	uncollateralisedSlFlag string (0..1)
+	collateralisationOfNetExposure string (0..1)
+	valueDateOfTheCollateral string (0..1)
+	typeOfCollateralComponent string (0..1)
+	cashCollateralAmount string (0..1)
+	cashCollateralCurrency string (0..1)
+	identificationOfASecurityUsedAsCollateral string (0..1)
+	classificationOfASecurityUsedAsCollateral string (0..1)
+	collateralBaseProduct string (0..1)
+	collateralSubProduct string (0..1)
+	collateralFurtherSubProduct string (0..1)
+	collateralQuantityOrNominalAmount string (0..1)
+	collateralUnitOfMeasure string (0..1)
+	currencyOfCollateralNominalAmount string (0..1)
+	collateralPriceCurrency string (0..1)
+	pricePerUnit string (0..1)
+	collateralMarketValue string (0..1)
+	haircutOrMargin string (0..1)
+	collateralQuality string (0..1)
+	maturityOfTheCollateralSecurity string (0..1)
+	jurisdictionOfTheIssuerOfCollateralSecurity string (0..1)
+	leiOfTheIssuerOfCollateralSecurity string (0..1)
+	collateralType string (0..1)
+	availabilityForCollateralReuse string (0..1)
+	collateralBasketIdentifier string (0..1)
+	portfolioCode string (0..1)
+	actionType string (0..1)
+	level string (0..1)
+
+
+type GleiRecord:
+	lei string (1..1)
+	registeredAt string (1..1)
+	registedAs string (1..1)
+	jurisdictionOfFormation string(1..1)
+	generalCategory string (1..1)
+	entityLegalForm string (1..1)
+	entityStatus string (1..1)
+	entity GleiEntity (1..1)
+
+type GleiEntity:
+	legalName string (1..1)
+	legalAddress GleiAddress (1..1)
+	
+
+type GleiAddress:
+	firstAddressLine string (1..1)
+	mailRouting string (1..1)
+	city string (1..1)
+	country ISOCountryCodeEnum(1..1)
+	
+	
+enum SftrTestEnum:
+	Y
+	N
+
+type SftrName:
+	fname string (1..1)
+	lname string (1..1)
+
+	
+type SftrTestType:
+	stype SftrTestEnum(1..1)
+	s1 string (1..1)
+	s2 string (1..*)
+	s3 SftrName(1..1)
+	s4 SftrName(1..*)
+	
+
